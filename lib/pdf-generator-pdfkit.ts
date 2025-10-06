@@ -63,8 +63,12 @@ export async function generateMutiraoPDFKit(dados: MutiraoRelatorio): Promise<Bu
       
       doc.moveDown(1);
       
+      // Para MutiraoRelatorio, não temos subRegiao diretamente, mas temos nas seções
+      const subRegioes = dados.secoes?.map(s => s.sub) || [];
+      const subRegiaoTexto = subRegioes.length > 0 ? subRegioes.join(', ') : 'Não informado';
+      
       doc.fontSize(14)
-         .text(`Sub-região: ${dados.subRegiao || 'Não informado'}`, { align: 'center' });
+         .text(`Sub-regiões: ${subRegiaoTexto}`, { align: 'center' });
       
       doc.moveDown(2);
       
@@ -92,7 +96,7 @@ export async function generateMutiraoPDFKit(dados: MutiraoRelatorio): Promise<Bu
         
         // Dados da tabela
         dados.quantitativo.forEach((item, index) => {
-          doc.text(item.item || `Item ${index + 1}`, 50, doc.y)
+          doc.text(item.descricao || `Item ${index + 1}`, 50, doc.y)
              .text(item.quantidade?.toString() || '0', 200, doc.y)
              .text(item.unidade || 'un', 300, doc.y);
           
@@ -111,24 +115,29 @@ export async function generateMutiraoPDFKit(dados: MutiraoRelatorio): Promise<Bu
         
         dados.secoes.forEach((secao, secaoIndex) => {
           doc.fontSize(14)
-             .text(`${secaoIndex + 1}. ${secao.subRegiao || 'Sub-região'}`, { underline: true });
+             .text(`${secaoIndex + 1}. ${secao.sub || 'Sub-região'}`, { underline: true });
           
           doc.moveDown(0.3);
           
-          if (secao.atividades && secao.atividades.length > 0) {
-            secao.atividades.forEach((atividade, atividadeIndex) => {
-              doc.fontSize(12)
-                 .text(`${atividadeIndex + 1}. ${atividade.titulo || 'Atividade'}`, 70, doc.y);
-              
-              doc.moveDown(0.2);
-              
-              if (atividade.descricao) {
-                doc.fontSize(10)
-                   .text(`   ${atividade.descricao}`, 90, doc.y);
-                
-                doc.moveDown(0.3);
-              }
-            });
+          if (secao.local) {
+            doc.fontSize(12)
+               .text(`Local: ${secao.local}`, 70, doc.y);
+            
+            doc.moveDown(0.2);
+          }
+          
+          if (secao.descricao) {
+            doc.fontSize(12)
+               .text(`Descrição: ${secao.descricao}`, 70, doc.y);
+            
+            doc.moveDown(0.3);
+          }
+          
+          if (secao.servicos && secao.servicos.length > 0) {
+            doc.fontSize(12)
+               .text(`Serviços executados: ${secao.servicos.length}`, 70, doc.y);
+            
+            doc.moveDown(0.2);
           }
           
           doc.moveDown(0.5);
@@ -189,39 +198,45 @@ export async function generateEvidenciasPDFKit(dados: Relatorio): Promise<Buffer
       
       doc.moveDown(1);
       
+      // Para Relatorio genérico, verificar se tem sub
+      const subRegiao = 'sub' in dados ? dados.sub : 'Não informado';
+      
       doc.fontSize(14)
-         .text(`Sub-região: ${dados.subRegiao || 'Não informado'}`, { align: 'center' });
+         .text(`Sub-região: ${subRegiao}`, { align: 'center' });
       
       doc.moveDown(1);
       
+      // Para Relatorio genérico, verificar se tem local
+      const local = 'local' in dados ? dados.local : 'Não informado';
+      
       doc.fontSize(14)
-         .text(`Responsável: ${dados.responsavel || 'Não informado'}`, { align: 'center' });
+         .text(`Local: ${local}`, { align: 'center' });
       
       doc.moveDown(2);
       
-      // EVIDÊNCIAS
-      if (dados.evidencias && dados.evidencias.length > 0) {
+      // FOTOS
+      if ('fotos' in dados && dados.fotos && dados.fotos.length > 0) {
         doc.fontSize(16)
-           .text('EVIDÊNCIAS FOTOGRÁFICAS', { underline: true });
+           .text('FOTOS', { underline: true });
         
         doc.moveDown(0.5);
         
-        dados.evidencias.forEach((evidencia, index) => {
+        dados.fotos.forEach((foto, index) => {
           doc.fontSize(14)
-             .text(`Evidência ${index + 1}`, { underline: true });
+             .text(`Foto ${index + 1}`, { underline: true });
           
           doc.moveDown(0.3);
           
-          if (evidencia.descricao) {
+          if (foto.descricao) {
             doc.fontSize(12)
-               .text(`Descrição: ${evidencia.descricao}`);
+               .text(`Descrição: ${foto.descricao}`);
             
             doc.moveDown(0.3);
           }
           
-          if (evidencia.url) {
+          if (foto.url) {
             doc.fontSize(10)
-               .text(`URL: ${evidencia.url}`);
+               .text(`URL: ${foto.url}`);
             
             doc.moveDown(0.5);
           }
@@ -300,17 +315,16 @@ export async function generateRotineirosPDFKit(mesAno: string, rotineiros: Rotin
         doc.moveDown(0.2);
         
         doc.fontSize(12)
-           .text(`Sub-região: ${rotineiro.subRegiao || 'Não informado'}`, 70, doc.y);
+           .text(`Sub-região: ${rotineiro.sub || 'Não informado'}`, 70, doc.y);
         
         doc.moveDown(0.2);
         
-        doc.fontSize(12)
-           .text(`Responsável: ${rotineiro.responsavel || 'Não informado'}`, 70, doc.y);
-        
-        doc.moveDown(0.2);
-        
-        doc.fontSize(12)
-           .text(`Status: ${rotineiro.status || 'Concluído'}`, 70, doc.y);
+        if (rotineiro.servicos && rotineiro.servicos.length > 0) {
+          doc.fontSize(12)
+             .text(`Serviços: ${rotineiro.servicos.length}`, 70, doc.y);
+          
+          doc.moveDown(0.2);
+        }
         
         doc.moveDown(0.5);
       });
@@ -370,12 +384,12 @@ export async function generateMonumentosPDFKit(dados: MonumentosRelatorio): Prom
       doc.moveDown(1);
       
       doc.fontSize(14)
-         .text(`Sub-região: ${dados.subRegiao || 'Não informado'}`, { align: 'center' });
+         .text(`Sub-região: ${dados.sub || 'Não informado'}`, { align: 'center' });
       
       doc.moveDown(1);
       
       doc.fontSize(14)
-         .text(`Responsável: ${dados.responsavel || 'Não informado'}`, { align: 'center' });
+         .text(`Monumento: ${dados.monumento || 'Não informado'}`, { align: 'center' });
       
       doc.moveDown(2);
       
