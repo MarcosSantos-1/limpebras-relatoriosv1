@@ -193,8 +193,13 @@ export async function generateEvidenciasPDFKit(dados: Relatorio): Promise<Buffer
       
       doc.moveDown(1);
       
+      // Para Relatorio genérico, verificar se tem data ou dataInicio
+      const dataRelatorio = 'data' in dados ? dados.data : 
+                           'dataInicio' in dados ? dados.dataInicio : 
+                           'Não informado';
+      
       doc.fontSize(14)
-         .text(`Data: ${new Date(dados.data).toLocaleDateString('pt-BR')}`, { align: 'center' });
+         .text(`Data: ${dataRelatorio !== 'Não informado' ? new Date(dataRelatorio).toLocaleDateString('pt-BR') : dataRelatorio}`, { align: 'center' });
       
       doc.moveDown(1);
       
