@@ -12,8 +12,8 @@ import type { MutiraoRelatorio, Relatorio, RotineirosRelatorio, MonumentosRelato
  * Configurações para geração de PDF
  */
 const PDF_CONFIG = {
-  size: 'A4',
-  layout: 'landscape',
+  size: 'A4' as const,
+  layout: 'landscape' as const,
   margins: {
     top: 50,
     bottom: 50,
