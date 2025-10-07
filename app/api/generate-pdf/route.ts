@@ -10,31 +10,28 @@
  * - evidencias: Evidências fotográficas
  * - unified: Relatórios unificados (revitalização, etc.)
  * 
- * NOVA IMPLEMENTAÇÃO: Usando jsPDF + html2canvas para melhor compatibilidade com servidores
+ * IMPLEMENTAÇÃO SIMPLIFICADA: Usando jsPDF com layout específico (funciona no servidor)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
-// Importações dos geradores de PDF específicos (Puppeteer - mantidos para compatibilidade)
+// Importações dos geradores de PDF específicos (mantidos para compatibilidade)
 import { exportMutiraoPdf, exportRegistroPdf } from '@/lib/pdf/mutirao-modern';
 import { exportEvidenciasPdf } from '@/lib/pdf/evidencias-modern';
 import { exportUnifiedPdf } from '@/lib/pdf/relatorios-modern';
 import { generateMonumentosHTML } from '@/lib/pdf/monumentos-modern';
 import { exportEvidenciasRotineirosPdf } from '@/lib/pdf/rotineiros-modern';
 
-// IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF com layout específico (funciona no servidor)
+// GERADOR DE PDF PRINCIPAL: jsPDF com layout específico (funciona no servidor)
 import { 
   generateMutiraoJSPDF, 
   generateEvidenciasJSPDF, 
   generateRotineirosJSPDF, 
   generateMonumentosJSPDF 
-} from '@/lib/pdf-generator-layout-specific';
+} from '@/lib/pdf-generator';
 
 // Importações para geração de nomes de arquivos
 import { generateFileName, generateConsolidatedFileName } from '@/lib/filename-generator';
-
-// Configuração centralizada do Puppeteer (mantida para fallback)
-import { generatePDFFromHTML } from '@/lib/puppeteer-config';
 
 // Tipos TypeScript
 import type { MutiraoRelatorio, RegistroRelatorio, ReportSummary, Relatorio, MonumentosRelatorio, RotineirosRelatorio } from '@/lib/types';
@@ -59,8 +56,8 @@ export async function POST(request: NextRequest) {
     // ROTEAMENTO POR TIPO DE RELATÓRIO
     // ========================================
 
-    // IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF com layout específico (funciona no servidor)
-    console.log('🚀 Usando jsPDF com layout específico (sem Puppeteer)...');
+        // IMPLEMENTAÇÃO SIMPLIFICADA: Usar jsPDF com layout específico (funciona no servidor)
+        console.log('🚀 Usando jsPDF com layout específico...');
     
     // Verificar se os dados estão corretos
     console.log('📊 Dados recebidos:', JSON.stringify(dados, null, 2));
