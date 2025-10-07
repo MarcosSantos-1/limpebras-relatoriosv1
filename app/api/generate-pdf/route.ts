@@ -22,13 +22,13 @@ import { exportUnifiedPdf } from '@/lib/pdf/relatorios-modern';
 import { generateMonumentosHTML } from '@/lib/pdf/monumentos-modern';
 import { exportEvidenciasRotineirosPdf } from '@/lib/pdf/rotineiros-modern';
 
-// IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF (funciona no servidor)
+// IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF com layout específico (funciona no servidor)
 import { 
   generateMutiraoJSPDF, 
   generateEvidenciasJSPDF, 
   generateRotineirosJSPDF, 
   generateMonumentosJSPDF 
-} from '@/lib/pdf-generator-jspdf-server';
+} from '@/lib/pdf-generator-layout-specific';
 
 // Importações para geração de nomes de arquivos
 import { generateFileName, generateConsolidatedFileName } from '@/lib/filename-generator';
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     // ROTEAMENTO POR TIPO DE RELATÓRIO
     // ========================================
 
-    // IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF (funciona no servidor)
-    console.log('🚀 Usando jsPDF (sem Puppeteer)...');
+    // IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF com layout específico (funciona no servidor)
+    console.log('🚀 Usando jsPDF com layout específico (sem Puppeteer)...');
     
     // Verificar se os dados estão corretos
     console.log('📊 Dados recebidos:', JSON.stringify(dados, null, 2));
