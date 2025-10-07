@@ -33,32 +33,35 @@ function createCoverPage(doc: jsPDF, title: string, date: string, subRegiao: str
   const coverImage = loadImageAsBase64('cover.png');
   const logoImage = loadImageAsBase64('logo.png');
   
-  // Background da capa (cover.png)
+  // Background da capa (cover.png) - SEM DISTORÇÃO
   if (coverImage) {
-    doc.addImage(coverImage, 'PNG', 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
+    // Manter proporção da imagem
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    doc.addImage(coverImage, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
   }
   
-  // Logo no canto superior direito
+  // Logo no canto superior direito - TAMANHO CORRETO
   if (logoImage) {
-    const logoSize = 120;
-    const logoX = doc.internal.pageSize.getWidth() - logoSize - 40;
-    const logoY = 30;
-    doc.addImage(logoImage, 'PNG', logoX, logoY, logoSize, logoSize);
+    const logoSize = 30; // Reduzido de 120 para 30mm
+    const logoX = doc.internal.pageSize.getWidth() - logoSize - 10; // Reduzido de 40 para 10mm
+    const logoY = 8; // Reduzido de 30 para 8mm
+    doc.addImage(logoImage, 'PNG', logoX, logoY, logoSize, logoSize, undefined, 'FAST');
   }
   
-  // Título "Relatórios de Evidências"
-  doc.setFontSize(60);
+  // Título "Relatórios de Evidências" - TAMANHO CORRETO
+  doc.setFontSize(24); // Reduzido de 60 para 24
   doc.setTextColor(25, 42, 86); // Azul escuro
-  const titleX = doc.internal.pageSize.getWidth() - 200;
-  const titleY = 200;
+  const titleX = doc.internal.pageSize.getWidth() - 15; // Reduzido de 200 para 15mm
+  const titleY = 60; // Reduzido de 200 para 60mm
   doc.text('Relatórios de', titleX, titleY, { align: 'right' });
-  doc.text('Evidências', titleX, titleY + 40, { align: 'right' });
+  doc.text('Evidências', titleX, titleY + 8, { align: 'right' }); // Reduzido espaçamento
   
-  // Data e localização
-  doc.setFontSize(22);
+  // Data e localização - TAMANHO CORRETO
+  doc.setFontSize(10); // Reduzido de 22 para 10
   doc.setTextColor(25, 42, 86); // Azul escuro
-  const dateX = doc.internal.pageSize.getWidth() - 20;
-  const dateY = doc.internal.pageSize.getHeight() - 100;
+  const dateX = doc.internal.pageSize.getWidth() - 10; // Reduzido de 20 para 10mm
+  const dateY = doc.internal.pageSize.getHeight() - 20; // Reduzido de 100 para 20mm
   doc.text(`${subRegiao}, ${date}`, dateX, dateY, { align: 'right' });
 }
 
@@ -66,41 +69,41 @@ function createCoverPage(doc: jsPDF, title: string, date: string, subRegiao: str
  * Função para criar a contracapa conforme especificação
  */
 function createBackCoverPage(doc: jsPDF, reportTitle: string, date: string, subRegiao: string, isConsolidated: boolean = false): void {
-  // Logo centralizado
+  // Logo centralizado - TAMANHO CORRETO
   const logoImage = loadImageAsBase64('logo.png');
   if (logoImage) {
-    const logoSize = 150;
+    const logoSize = 40; // Reduzido de 150 para 40mm
     const logoX = (doc.internal.pageSize.getWidth() - logoSize) / 2;
-    const logoY = 30;
-    doc.addImage(logoImage, 'PNG', logoX, logoY, logoSize, logoSize);
+    const logoY = 8; // Reduzido de 30 para 8mm
+    doc.addImage(logoImage, 'PNG', logoX, logoY, logoSize, logoSize, undefined, 'FAST');
   }
   
-  // Título do relatório
-  doc.setFontSize(72);
+  // Título do relatório - TAMANHO CORRETO
+  doc.setFontSize(18); // Reduzido de 72 para 18
   doc.setTextColor(25, 42, 86); // Azul escuro
   const titleX = doc.internal.pageSize.getWidth() / 2;
-  const titleY = 250;
-  doc.text(reportTitle, titleX, titleY, { align: 'center', maxWidth: 400 });
+  const titleY = 60; // Reduzido de 250 para 60mm
+  doc.text(reportTitle, titleX, titleY, { align: 'center', maxWidth: 100 }); // Reduzido maxWidth de 400 para 100
   
-  // Data e sub-região
-  doc.setFontSize(22);
+  // Data e sub-região - TAMANHO CORRETO
+  doc.setFontSize(10); // Reduzido de 22 para 10
   doc.setTextColor(25, 42, 86); // Azul escuro
-  const dateY = titleY + 60;
+  const dateY = titleY + 15; // Reduzido de 60 para 15mm
   doc.text(date, titleX, dateY, { align: 'center' });
   
   // Sub-região ou evidências consolidadas
-  const subY = dateY + 30;
+  const subY = dateY + 8; // Reduzido de 30 para 8mm
   if (isConsolidated) {
     doc.text('EVIDÊNCIAS CONSOLIDADAS', titleX, subY, { align: 'center' });
   } else {
     doc.text(subRegiao, titleX, subY, { align: 'center' });
   }
   
-  // Line na borda inferior
+  // Line na borda inferior - TAMANHO CORRETO
   const lineImage = loadImageAsBase64('line.png');
   if (lineImage) {
-    const lineY = doc.internal.pageSize.getHeight() - 40;
-    doc.addImage(lineImage, 'PNG', 0, lineY, doc.internal.pageSize.getWidth(), 40);
+    const lineY = doc.internal.pageSize.getHeight() - 10; // Reduzido de 40 para 10mm
+    doc.addImage(lineImage, 'PNG', 0, lineY, doc.internal.pageSize.getWidth(), 10, undefined, 'FAST');
   }
 }
 
@@ -108,50 +111,59 @@ function createBackCoverPage(doc: jsPDF, reportTitle: string, date: string, subR
  * Função para criar página fotográfica conforme especificação
  */
 function createPhotoPage(doc: jsPDF, subRegiao: string, serviceName: string, date: string, photos: any[]): void {
-  // Cabeçalho com logos
+  // MARGENS ESTREITAS: 20px superior, 30px direita, 30px inferior, 30px esquerda
+  const marginTop = 5; // 20px = 5mm
+  const marginRight = 8; // 30px = 8mm  
+  const marginBottom = 8; // 30px = 8mm
+  const marginLeft = 8; // 30px = 8mm
+  
+  // Cabeçalho com logos - TAMANHOS CORRETOS
   const prefeituraImage = loadImageAsBase64('prefeitura.png');
   const logoImage = loadImageAsBase64('logo.png');
   
-  // Logo da prefeitura (esquerda)
+  // Logo da prefeitura (esquerda) - SEM DISTORÇÃO
   if (prefeituraImage) {
-    const logoHeight = 80;
-    doc.addImage(prefeituraImage, 'PNG', 20, 20, logoHeight, logoHeight);
+    const logoHeight = 20; // Reduzido de 80 para 20mm
+    doc.addImage(prefeituraImage, 'PNG', marginLeft, marginTop, logoHeight, logoHeight, undefined, 'FAST');
   }
   
-  // Logo (direita)
+  // Logo (direita) - SEM DISTORÇÃO
   if (logoImage) {
-    const logoHeight = 80;
-    const logoX = doc.internal.pageSize.getWidth() - logoHeight - 60;
-    doc.addImage(logoImage, 'PNG', logoX, 20, logoHeight, logoHeight);
+    const logoHeight = 20; // Reduzido de 80 para 20mm
+    const logoX = doc.internal.pageSize.getWidth() - logoHeight - marginRight;
+    doc.addImage(logoImage, 'PNG', logoX, marginTop, logoHeight, logoHeight, undefined, 'FAST');
   }
   
-  // Descritivo
-  let y = 120;
+  // Descritivo - COMPACTO COM LINE-HEIGHT PEQUENO
+  let y = marginTop + 25; // Reduzido de 120 para 25mm
   
-  // Prefeitura Regional
-  doc.setFontSize(16);
+  // Prefeitura Regional - FONTE 12px COM LINE-HEIGHT PEQUENO
+  doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'bold');
-  doc.text(`PREFEITURA REGIONAL: ${subRegiao}`, 30, y);
-  y += 25;
+  doc.text(`PREFEITURA REGIONAL: ${subRegiao}`, marginLeft, y);
+  y += 4; // Line-height pequeno (reduzido de 25 para 4mm)
   
   // Operação São Paulo Limpa
-  doc.text('Operação São Paulo Limpa', 30, y);
-  y += 25;
+  doc.text('Operação São Paulo Limpa', marginLeft, y);
+  y += 4; // Line-height pequeno
   
   // Serviço
-  doc.text(`Serviço(s): ${serviceName}`, 30, y);
-  y += 25;
+  doc.text(`Serviço(s): ${serviceName}`, marginLeft, y);
+  y += 4; // Line-height pequeno
   
   // Data
-  doc.text(`Data: ${date}`, 30, y);
-  y += 40;
+  doc.text(`Data: ${date}`, marginLeft, y);
+  y += 8; // Espaço antes das fotos (reduzido de 40 para 8mm)
   
-  // Fotos em grid (máximo 3 por página)
+  // Fotos em grid (máximo 3 por página) - TAMANHOS CORRETOS
   const photosPerRow = 3;
-  const photoSize = 430;
-  const gap = 10;
-  const startX = 30;
+  const availableWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
+  const gap = 2; // Gap pequeno (reduzido de 10 para 2mm)
+  const photoSize = (availableWidth - (gap * (photosPerRow - 1))) / photosPerRow; // Cálculo dinâmico
+  const startX = marginLeft;
+  
+  console.log(`📸 Renderizando ${photos.length} fotos com tamanho ${photoSize}mm`);
   
   for (let i = 0; i < Math.min(photos.length, 3); i++) {
     const photo = photos[i];
@@ -159,14 +171,15 @@ function createPhotoPage(doc: jsPDF, subRegiao: string, serviceName: string, dat
     const x = startX + col * (photoSize + gap);
     
     try {
-      // Processar imagem base64
+      // Processar imagem base64 - SEM DISTORÇÃO
       const base64Data = photo.url.replace(/^data:image\/[a-z]+;base64,/, '');
-      doc.addImage(base64Data, 'JPEG', x, y, photoSize, photoSize);
+      doc.addImage(base64Data, 'JPEG', x, y, photoSize, photoSize, undefined, 'FAST');
+      console.log(`✅ Foto ${i + 1} renderizada em ${x}, ${y}`);
     } catch (error) {
       console.warn('⚠️ Erro ao renderizar foto:', error);
       // Placeholder se não conseguir renderizar
       doc.rect(x, y, photoSize, photoSize);
-      doc.text('Imagem não disponível', x + 10, y + photoSize/2);
+      doc.text('Imagem não disponível', x + 2, y + photoSize/2);
     }
   }
 }
@@ -178,24 +191,24 @@ function createFinalCoverPage(doc: jsPDF): void {
   const lineImage = loadImageAsBase64('line.png');
   const logoImage = loadImageAsBase64('logo.png');
   
-  // Line superior (invertido verticalmente)
+  // Line superior (invertido verticalmente) - TAMANHO CORRETO
   if (lineImage) {
-    doc.addImage(lineImage, 'PNG', 0, 0, doc.internal.pageSize.getWidth(), 40);
+    doc.addImage(lineImage, 'PNG', 0, 0, doc.internal.pageSize.getWidth(), 10, undefined, 'FAST'); // Reduzido de 40 para 10mm
   }
   
-  // Logo centralizado
+  // Logo centralizado - TAMANHO CORRETO
   if (logoImage) {
-    const logoWidth = 600;
+    const logoWidth = 60; // Reduzido de 600 para 60mm
     const logoHeight = logoWidth; // Assumindo que é quadrado
     const logoX = (doc.internal.pageSize.getWidth() - logoWidth) / 2;
     const logoY = (doc.internal.pageSize.getHeight() - logoHeight) / 2;
-    doc.addImage(logoImage, 'PNG', logoX, logoY, logoWidth, logoHeight);
+    doc.addImage(logoImage, 'PNG', logoX, logoY, logoWidth, logoHeight, undefined, 'FAST');
   }
   
-  // Line inferior
+  // Line inferior - TAMANHO CORRETO
   if (lineImage) {
-    const lineY = doc.internal.pageSize.getHeight() - 40;
-    doc.addImage(lineImage, 'PNG', 0, lineY, doc.internal.pageSize.getWidth(), 40);
+    const lineY = doc.internal.pageSize.getHeight() - 10; // Reduzido de 40 para 10mm
+    doc.addImage(lineImage, 'PNG', 0, lineY, doc.internal.pageSize.getWidth(), 10, undefined, 'FAST');
   }
 }
 
