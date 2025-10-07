@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer-core';
-import { getPuppeteerConfig } from '@/lib/puppeteer-config';
+// import puppeteer from 'puppeteer-core'; // Removido - usando jsPDF
+// import { getPuppeteerConfig } from '@/lib/puppeteer-config'; // Removido - usando jsPDF
 import type { Relatorio, RegistroRelatorio, RevitalizacaoRelatorio } from '@/lib/types';
 import { SUB_REGIOES, TIPOS_SERVICO, TITULOS_RELATORIOS } from '@/lib/types';
 import { getImageUrls } from './image-loader';

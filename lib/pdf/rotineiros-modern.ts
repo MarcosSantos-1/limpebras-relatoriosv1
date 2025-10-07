@@ -20,8 +20,8 @@
  * - Classes principais: .page, .cover-page, .service-photo-page
  */
 
-import puppeteer from 'puppeteer-core';
-import { getPuppeteerConfig } from '@/lib/puppeteer-config';
+// import puppeteer from 'puppeteer-core'; // Removido - usando jsPDF
+// import { getPuppeteerConfig } from '@/lib/puppeteer-config'; // Removido - usando jsPDF
 
 // Importar puppeteer completo para desenvolvimento
 let puppeteerDev: any = null;
