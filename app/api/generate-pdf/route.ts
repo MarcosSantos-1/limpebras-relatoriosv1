@@ -22,13 +22,13 @@ import { exportUnifiedPdf } from '@/lib/pdf/relatorios-modern';
 import { generateMonumentosHTML } from '@/lib/pdf/monumentos-modern';
 import { exportEvidenciasRotineirosPdf } from '@/lib/pdf/rotineiros-modern';
 
-// IMPLEMENTAÇÃO SEM PUPPETEER: Usar PDFKit (funciona no servidor)
+// IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF (funciona no servidor)
 import { 
-  generateMutiraoPDFKit, 
-  generateEvidenciasPDFKit, 
-  generateRotineirosPDFKit, 
-  generateMonumentosPDFKit 
-} from '@/lib/pdf-generator-pdfkit';
+  generateMutiraoJSPDF, 
+  generateEvidenciasJSPDF, 
+  generateRotineirosJSPDF, 
+  generateMonumentosJSPDF 
+} from '@/lib/pdf-generator-jspdf-server';
 
 // Importações para geração de nomes de arquivos
 import { generateFileName, generateConsolidatedFileName } from '@/lib/filename-generator';
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     // ROTEAMENTO POR TIPO DE RELATÓRIO
     // ========================================
 
-    // IMPLEMENTAÇÃO SEM PUPPETEER: Usar PDFKit (funciona no servidor)
-    console.log('🚀 Usando PDFKit (sem Puppeteer)...');
+    // IMPLEMENTAÇÃO SEM PUPPETEER: Usar jsPDF (funciona no servidor)
+    console.log('🚀 Usando jsPDF (sem Puppeteer)...');
     
     // Verificar se os dados estão corretos
     console.log('📊 Dados recebidos:', JSON.stringify(dados, null, 2));
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Dados do mutirão incompletos' }, { status: 400 });
         }
         
-        pdfBuffer = await generateMutiraoPDFKit(dados as MutiraoRelatorio);
+        pdfBuffer = await generateMutiraoJSPDF(dados as MutiraoRelatorio);
         fileName = consolidated 
           ? generateConsolidatedFileName(dados.data)
           : generateFileName(dados as MutiraoRelatorio);
@@ -88,12 +88,12 @@ export async function POST(request: NextRequest) {
       case 'evidencias':
         console.log('🔄 Processando evidências...', dados.tipoServico);
         // Verificar se tem os campos necessários
-        if (!dados.tipoServico || !dados.data) {
+        if (!dados.tipoServico || (!dados.data && !dados.dataInicio)) {
           console.error('❌ Dados das evidências incompletos:', dados);
           return NextResponse.json({ error: 'Dados das evidências incompletos' }, { status: 400 });
         }
         
-        pdfBuffer = await generateEvidenciasPDFKit(dados as Relatorio);
+        pdfBuffer = await generateEvidenciasJSPDF(dados as Relatorio);
         fileName = generateFileName(dados as Relatorio);
         break;
 
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         }
         
         const dataFormatada = new Date(dados.data).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-        pdfBuffer = await generateRotineirosPDFKit(dataFormatada, [dados as RotineirosRelatorio]);
+        pdfBuffer = await generateRotineirosJSPDF(dataFormatada, [dados as RotineirosRelatorio]);
         fileName = generateFileName(dados as RotineirosRelatorio);
         break;
 
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Dados dos monumentos incompletos' }, { status: 400 });
         }
         
-        pdfBuffer = await generateMonumentosPDFKit(dados as MonumentosRelatorio);
+        pdfBuffer = await generateMonumentosJSPDF(dados as MonumentosRelatorio);
         fileName = generateFileName(dados as MonumentosRelatorio);
         break;
 
@@ -126,13 +126,13 @@ export async function POST(request: NextRequest) {
       case 'unified':
         console.log(`🔄 Processando ${tipo}...`);
         // Verificar se tem os campos necessários
-        if (!dados.tipoServico || !dados.data) {
+        if (!dados.tipoServico || (!dados.data && !dados.dataInicio)) {
           console.error(`❌ Dados do ${tipo} incompletos:`, dados);
           return NextResponse.json({ error: `Dados do ${tipo} incompletos` }, { status: 400 });
         }
         
-        // Para tipos que ainda não têm versão PDFKit específica, usar evidências
-        pdfBuffer = await generateEvidenciasPDFKit(dados as Relatorio);
+        // Para tipos que ainda não têm versão jsPDF específica, usar evidências
+        pdfBuffer = await generateEvidenciasJSPDF(dados as Relatorio);
         fileName = generateFileName(dados as Relatorio);
         break;
 

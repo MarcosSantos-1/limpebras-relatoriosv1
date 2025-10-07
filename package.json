@@ -16,6 +16,7 @@
   "dependencies": {
     "@sparticuz/chromium-min": "^138.0.2",
     "@supabase/supabase-js": "^2.58.0",
+    "@types/pdfkit": "^0.17.3",
     "@types/uuid": "^10.0.0",
     "date-fns": "^4.1.0",
     "firebase": "^12.3.0",
@@ -34,7 +35,6 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
-    "@types/pdfkit": "^0.17.3",
     "@types/react": "^19",
     "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^19",
